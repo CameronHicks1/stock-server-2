@@ -1,0 +1,84 @@
+<HTML>
+<head>
+<meta http-equiv="cache-control" content="max-age=3600" charset="UTF-8"/>
+<script data-require="jquery@*" data-semver="3.0.0" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0/jquery.js"></script>
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link data-require="bootstrap@4.0.0-alpha.2" data-semver="4.0.0-alpha.2" rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css" />
+    <script data-require="bootstrap@4.0.0-alpha.2" data-semver="4.0.0-alpha.2" src="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/js/bootstrap.js"></script>
+
+<script>
+$(document).ready(function() {
+  $('#button_new').click(function() {
+    var new_stock = document.getElementById("new_site").value;
+    var data = ${data};
+    var already_exists = false;
+    for (var stock in data) {
+      if ($.inArray(new_stock, data) != -1) {
+        already_exists = true;
+        break;
+      }
+    }
+    if (new_stock === "") {
+      alert("Please enter a stock");
+    }
+    else if (already_exists == true) {
+      alert("stock already exists");
+      already_exists = false;
+    }
+    else {
+      jQuery.ajax({type: "POST",
+        url: 'http://localhost:8080',
+	success: function() {
+	  window.location.reload();
+	  document.getElementById("new_site").value = "";    
+	},
+	data: JSON.stringify({'create_site': new_stock}),
+	  contentType: 'application/json; charset=utf=8'
+      });
+    }
+  });
+});
+</script>
+<style>
+.individual_container {
+  height: 40px;
+  margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+
+<ol class="breadcrumb">
+  <li><a href="/stocks/">Home</a></li>
+  <li class="active">Library</li>
+</ol>
+
+  <h2>Hello World!</h2>
+  <p>Click any div to go to individual page.</p>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h4 class="panel-title">Stocks</h4>
+  </div>
+  <div class="panel-body">
+    <div class="container row">
+      <div tal:repeat="stock data" class="col-sm-1 text-center">
+        <div id="${stock}" class="individual_container">
+          <span class="text-center"><a href="http://localhost:8080/stocks/${stock}">${stock}</a></span>
+	  <!-- <button class="delete" id="delete_${stock}">remove</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div>
+  <span><a href="http://localhost:8080/table/">View Table <span class="glyphicon glyphicon-equalizer"></span></a></span>
+</div>
+  <br>
+  <div class="add_container">
+    <input type="text" id="new_site">
+    <button id="button_new" type="text" class="btn btn-outline-primary">Add site <span class="glyphicon glyphicon-plus"></span></button>
+  </div>
+
+</body>
+</HTML>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<HTML>
+<head>
+<meta http-equiv="cache-control" content="max-age=3600" charset="UTF-8"/>
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link data-require="bootstrap@4.0.0-alpha.2" data-semver="4.0.0-alpha.2" rel="stylesheet" href="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/css/bootstrap.css" />
+<script data-require="bootstrap@4.0.0-alpha.2" data-semver="4.0.0-alpha.2" src="https://cdn.rawgit.com/twbs/bootstrap/v4-dev/dist/js/bootstrap.js"></script>
+<script data-require="jquery@*" data-semver="3.0.0" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+
+<script>
+var stock = ${data};
+var stock_obj = JSON.parse('${data}');
+//
+// Replace placeholders with appropriate fields 
+//
+$(document).ready(function() {
+  // Name
+  document.getElementById("name").innerText = stock_obj.${symbol}.name.replace("&amp;#39;", "'").replace("&amp;", "&");
+  // Symbol
+  document.getElementById("symbol").innerText = stock_obj.${symbol}.symbol;
+  // Ask
+  document.getElementById("ask").innerText = stock_obj.${symbol}.ask;
+  // Bid
+  document.getElementById("bid").innerText = stock_obj.${symbol}.bid;
+  // Last Close
+  document.getElementById("last_close").innerText = Number(stock_obj.${symbol}.last_close);
+  // Range
+  document.getElementById("range").innerText = stock_obj.${symbol}.range;
+  // Dividend
+  document.getElementById("dividend").innerText = stock_obj.${symbol}.dividend;
+  // Yield
+  document.getElementById("yield").innerText = stock_obj.${symbol}.yield;
+  // Year Low
+  document.getElementById("low").innerText = stock_obj.${symbol}.low;
+  // Year High
+  document.getElementById("high").innerText = stock_obj.${symbol}.high;
+  // Bid 2
+  document.getElementById("bid2").innerText = stock_obj.${symbol}.bid;
+
+  if (stock_obj.${symbol}.bid > stock_obj.${symbol}.last_close) {
+    document.getElementById("arrow").style.color = "green";
+    document.getElementById("difference").innerText = '$' + Number((stock_obj.${symbol}.bid) - (stock_obj.${symbol}.last_close)).toFixed(2);
+  }
+  else if (stock_obj.${symbol}.bid < stock_obj.${symbol}.last_close) {
+    document.getElementById("arrow").className = "glyphicon glyphicon-chevron-down";
+    document.getElementById("arrow").style.color = "red";
+    document.getElementById("difference").innerText = '$' + Number(stock_obj.${symbol}.last_close - stock_obj.${symbol}.bid).toFixed(2);
+  }
+  else {
+    document.getElementById("arrow").className = "glyphicon glyphicon-minus";
+    document.getElementById("difference").innerText = "";
+  }
+});
+
+$(document).ready(function() {
+  $('#back').click(function() {
+    window.location = "http://localhost:8080/stocks/";
+  });
+});
+$(document).ready(function() {
+  $("#delete").click(function() {
+    var url = window.location.href;
+    var real = url.split("http://localhost:8080/stocks/");
+    var symbol = real[1]; 
+    jQuery.ajax({type: "POST",
+      url: 'http://localhost:8080',
+      success: function() {
+        window.location = "http://localhost:8080/stocks/";
+      },
+      data: JSON.stringify({'delete_site': symbol}),
+        contentType: 'application/json; charset=utf=8'
+    });
+  });
+});
+$(document).ready(function() {
+  $("#update").click(function() {
+    var url = window.location.href;
+    var real = url.split("http://localhost:8080/stocks/");
+    var symbol = real[1];
+    var s_url = 'http://localhost:8080/stocks/' + symbol;
+
+    $("#update").addClass('disabled')
+
+    jQuery.ajax({type: "POST",
+      url: 'http://localhost:8080',
+      success: function() {
+        window.location.reload();
+        },
+      data: JSON.stringify({'update_site': symbol}),
+        contentType: 'application/json; charset=utf=8'
+    });
+  });
+});
+
+</script>
+</head>
+
+<body>
+<ol class="breadcrumb">
+  <li><a href="/stocks/">Home</a></li>
+  <li><a href="/stocks/">Library</a></li>
+  <li class="active">${symbol}</li>
+</ol>
+  <h2><span id="name"></span></h2>
+  <h5><span id="symbol"></span><br></h5>
+  <p>Individual statistics for ${symbol} go on this page.</p><br><br>
+  <div class="col-sm-4">
+    <fieldset>
+      <legend>Current Price</legend>
+      <h2><span id="bid">Bid Goes Here</span> &#160;<span class="glyphicon glyphicon-chevron-up" id="arrow">&#160;<span id="difference"><i>test</i></span></span></h2>
+    </fieldset>
+    <p><i>NASDAQ</i></p>
+  </div>
+  <br><br><br>
+
+  <div>
+
+  <table class="table table-bordered text-center">
+    <tr>
+      <th><center>Ask</center>
+      </th>
+      <th><center>Bid</center>
+      </th>
+      <th><center>Day's Range</center>
+      </th>
+      <th><center>Last Close</center>
+      </th>
+      <th><center>Dividend</center>
+      </th>
+      <th><center>Yield</center>
+      </th>
+      <th><center>52 Week Low</center>
+      </th>
+      <th><center>52 Week High</center>
+      </th>
+    </tr>
+    <tr>
+      <td><span id="ask">Ask Goes Here</span>
+      </td>
+      <td><span id="bid2">Bid Goes Here</span>
+      </td>
+      <td><span id="range">Range Goes Here</span>
+      </td>
+      <td><span id="last_close">Last Close Goes Here</span>
+      </td>
+      <td><span id="dividend">Dividend Goes Here</span>
+      </td>
+      <td><span id="yield">Yield Goes Here</span>
+      </td>
+      <td><span id="low">52 Week Low Goes Here</span>
+      </td>
+      <td><span id="high">52 Week High Goes Here</span>
+      </td>
+    </tr>
+  </table>
+
+  <!-- Data Fields -->
+  </div>
+  <br>
+
+  <!-- Raw Data '$ {data}' <br><br>  -->
+
+  <div>
+    <button id="update" type="text" class="btn btn-outline-primary">Update <span class="glyphicon glyphicon-refresh"></span></button>
+  </div>
+  <div>
+    <button id="delete" type="text" class="btn btn-outline-danger">Remove <span class="glyphicon glyphicon-trash"></span></button>
+  </div>
+  <br>
+  <div>
+    <button id="back" type="text" class="btn btn-secondary">Back</button>
+  </div>
+</body>
+</HTML>
